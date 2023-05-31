@@ -85,7 +85,7 @@ class App:
 
     async def run(self, termination_timeout: Optional[float] = None) -> None:
         self.grpc_server.add_insecure_port(f"[::]:{self.port}")
-        self.logger.info(f"gRPC server starting: {self.port}")
+        self.logger.info("gRPC server starting")
         await self.grpc_server.start()
         self.logger.info("gRPC server started")
         await self.grpc_server.wait_for_termination(termination_timeout)

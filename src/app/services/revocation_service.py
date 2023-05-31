@@ -20,7 +20,7 @@ from app.revocation.revocations import Revocations
 class AsyncRevocationService(RevocationServicer):
     full_name: str = DESCRIPTOR.services_by_name["Revocation"].full_name
 
-    def __init__(self, logger: Optional[Logger]) -> None:
+    def __init__(self, logger: Optional[Logger] = None) -> None:
         self.logger = (
             logger if logger is not None else getLogger(self.__class__.__name__)
         )
@@ -40,7 +40,7 @@ class AsyncRevocationService(RevocationServicer):
             response = revocation.revoke(namespace, userId, quantity, request)
         except Exception as e:
             response = RevokeResponse(
-                reason = "got error: " + repr(e),
+                reason = f"Revocation method {str(e)} not supported",
                 status = RevocationStatus.FAIL.name,
             )
 
