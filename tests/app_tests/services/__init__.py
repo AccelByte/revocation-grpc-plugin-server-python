@@ -2,4 +2,4 @@
 # This is licensed software from AccelByte Inc, for limitations
 # and restrictions contact your company contract manager.
 
-from .filter_service import AsyncFilterServiceTestCase
+from .revocation_service import AsyncFilterServiceTestCase
