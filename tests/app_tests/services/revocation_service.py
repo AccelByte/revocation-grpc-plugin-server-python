@@ -37,7 +37,7 @@ class AsyncRevocationServiceTestCase(IsolatedAsyncioTestCase):
                 balanceOrigin = "SYSTEM"
             ),
         )
-        response = await self.service.RollLootBoxRewards(request, None)
+        response = await self.service.Revoke(request, None)
         
         # assert
         self.assertIsNotNone(response)
