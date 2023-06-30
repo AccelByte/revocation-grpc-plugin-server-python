@@ -4,12 +4,12 @@
 
 import traceback
 
-import accelbyte_py_sdk
-import accelbyte_py_sdk.services.auth as auth_service
-import accelbyte_py_sdk.api.iam as iam_service
+import pkg.client.accelbyte_py_sdk_temp as accelbyte_py_sdk
+import pkg.client.accelbyte_py_sdk_temp.services.auth as auth_service
+import pkg.client.accelbyte_py_sdk_temp.api.iam as iam_service
 
-from client.config import get_config
-from client.demo import PlatformDataUnit
+from pkg.config import get_config
+from pkg.demo import PlatformDataUnit
 
 def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"):
     pdu = PlatformDataUnit(
@@ -36,7 +36,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 3.
         print("Creating category... ")
-        error = pdu.create_category(category_path, True)
+        error = pdu.create_category(category_path=category_path, do_publish=True)
         if error:
             print("[ERR]")
             raise Exception(error)
@@ -60,7 +60,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 6.
         print("Creating items...")
-        item_infos, error = pdu.create_items(1, category_path, True)
+        items, error = pdu.create_items(item_count=1, category_path=category_path, do_publish=True)
         if error:
             print("[ERR]")
             raise Exception(error)
@@ -68,7 +68,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 7.
         print("Creating order...")
-        order_info, error = pdu.create_order(user_info.user_id, item_infos[0])
+        order_info, error = pdu.create_order(user_id=user_info.user_id, item_info=items[0])
         if error:
             print("[ERR]")
             raise Exception(error)
@@ -76,25 +76,17 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 8.
         print("Revoking order...")
-        revocation_result, error = pdu.revoke(user_info.user_id, order_info.order_no, order_info.item_id)
+        revocation_result, error = pdu.revoke(user_id=user_info.user_id, order_no=order_info.order_no, item_id=order_info.item_id)
         if error:
             print("[ERR]")
             raise Exception(error)
         print("[OK]")
-
-        print("Revocation Result: ")
-        print(f"Revocation history id: {revocation_result.id}\n")
-        print(f"Revocation status id: {revocation_result.status}\n")
-
+        
+        print("\nRevocation Result: ")
+        print(f"Revocation history id: {revocation_result.id_}")
+        print(f"Revocation status id: {revocation_result.status}")
         for r in revocation_result.item_revocations:
-            print("item Id: %s" % r.item_id)
-            print("item sku: %s" % r.item_sku)
-            print("item type: %s" % r.item_type)
-            print("quantity: %d" % r.quantity)
-            print("revocation strategy: %s" % r.strategy)
-            print("skipped: %s" % str(r.skipped))
-            print("reason: %s" % r.reason)
-            print("custom revocation: %s" % r.custom_revocation)
+            print(r)
 
         print("[SUCCESS]")
     except:
@@ -102,9 +94,10 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
         print("\n[FAILED]")
     finally:
         print("# Cleaning Up")
-        print("Deleting currency[VCA]... ")
+        print("Deleting currency... ")
         _, error = pdu.delete_currency()
         if error:
+            print(error)
             return
         print("[OK]")
         if pdu.store_id:
