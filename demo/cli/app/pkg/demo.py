@@ -5,13 +5,10 @@
 from pkg.model import SimpleItemInfo
 from pkg.utils import random_string
 
-import pkg.client.accelbyte_py_sdk_temp.api.revocation as platformservice
-import pkg.client.accelbyte_py_sdk_temp.api.revocation.models as platformmodels
-
 from typing import Tuple, List
 
-import pkg.client.accelbyte_py_sdk_temp.api.platform as platform_service
-import pkg.client.accelbyte_py_sdk_temp.api.platform.models as platform_models
+import accelbyte_py_sdk.api.platform as platform_service
+import accelbyte_py_sdk.api.platform.models as platform_models
 
 AB_STORE_NAME = "Python Revocation Plugin Demo Store"
 ALPHA_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -30,12 +27,12 @@ class PlatformDataUnit:
         if self.config.GRPCServerURL:
             print(f"(Custom Host: {self.config.GRPCServerURL})")
 
-            _, error = platformservice.update_loot_box_plugin_config_1(
+            _, error = platform_service.update_loot_box_plugin_config_1(
                 namespace=self.config.ABNamespace,
-                body=platformmodels.RevocationPluginConfigUpdate.create(
-                    extend_type=platformmodels.RevocationPluginConfigInfoExtendTypeEnum.CUSTOM,
-                    custom_config=platformmodels.BaseCustomConfig.create(
-                        connection_type=platformmodels.BaseCustomConfigConnectionTypeEnum.INSECURE,
+                body=platform_models.RevocationPluginConfigUpdate.create(
+                    extend_type=platform_models.RevocationPluginConfigInfoExtendTypeEnum.CUSTOM,
+                    custom_config=platform_models.BaseCustomConfig.create(
+                        connection_type=platform_models.BaseCustomConfigConnectionTypeEnum.INSECURE,
                         grpc_server_address=self.config.GRPCServerURL
                     )
                 )
@@ -45,11 +42,11 @@ class PlatformDataUnit:
         if self.config.ExtendAppName:
             print(f"(Extend App: {self.config.ExtendAppName}) ")
 
-            _, error = platformservice.update_loot_box_plugin_config_1(
+            _, error = platform_service.update_loot_box_plugin_config_1(
                 namespace=self.config.ABNamespace,
-                body=platformmodels.RevocationPluginConfigUpdate.create(
-                    extend_type=platformmodels.RevocationPluginConfigInfoExtendTypeEnum.APP,
-                    app_config=platformmodels.AppConfig.create(
+                body=platform_models.RevocationPluginConfigUpdate.create(
+                    extend_type=platform_models.RevocationPluginConfigInfoExtendTypeEnum.APP,
+                    app_config=platform_models.AppConfig.create(
                         app_name=self.config.ExtendAppName
                     )
                 )
@@ -114,7 +111,7 @@ class PlatformDataUnit:
         return error
     
     def unset_platform_service_grpc_target(self):
-        _, error = platformservice.delete_loot_box_plugin_config_1(
+        _, error = platform_service.delete_loot_box_plugin_config_1(
             namespace=self.config.ABNamespace
         )
         return error
