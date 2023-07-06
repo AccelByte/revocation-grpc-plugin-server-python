@@ -28,7 +28,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
         
         # 2.
         print("Creating store... ")
-        error = pdu.creat_store(True)
+        error = pdu.create_store(True)
         if error:
             print("[ERR]")
             raise Exception(error)
