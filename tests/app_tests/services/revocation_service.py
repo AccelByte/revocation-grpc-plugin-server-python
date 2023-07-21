@@ -29,7 +29,7 @@ class AsyncRevocationServiceTestCase(IsolatedAsyncioTestCase):
         request = RevokeRequest(
             revokeEntryType = "CURRENCY",
             namespace = "test",
-            userId = "4423f033c38a40b9afdc8844e13647b7",
+            userId = "",
             quantity = 1,
             currency = RevokeCurrencyObject(
                 namespace = "test",
