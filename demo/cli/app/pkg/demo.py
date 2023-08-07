@@ -27,7 +27,7 @@ class PlatformDataUnit:
         if self.config.GRPCServerURL:
             print(f"(Custom Host: {self.config.GRPCServerURL})")
 
-            _, error = platform_service.update_loot_box_plugin_config_1(
+            _, error = platform_service.update_revocation_plugin_config(
                 namespace=self.config.ABNamespace,
                 body=platform_models.RevocationPluginConfigUpdate.create(
                     extend_type=platform_models.RevocationPluginConfigInfoExtendTypeEnum.CUSTOM,
@@ -42,7 +42,7 @@ class PlatformDataUnit:
         if self.config.ExtendAppName:
             print(f"(Extend App: {self.config.ExtendAppName}) ")
 
-            _, error = platform_service.update_loot_box_plugin_config_1(
+            _, error = platform_service.update_revocation_plugin_config(
                 namespace=self.config.ABNamespace,
                 body=platform_models.RevocationPluginConfigUpdate.create(
                     extend_type=platform_models.RevocationPluginConfigInfoExtendTypeEnum.APP,
@@ -111,7 +111,7 @@ class PlatformDataUnit:
         return error
     
     def unset_platform_service_grpc_target(self):
-        _, error = platform_service.delete_loot_box_plugin_config_1(
+        _, error = platform_service.delete_revocation_config(
             namespace=self.config.ABNamespace
         )
         return error
