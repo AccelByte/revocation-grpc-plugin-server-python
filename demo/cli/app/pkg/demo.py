@@ -2,8 +2,8 @@
 # This is licensed software from AccelByte Inc, for limitations
 # and restrictions contact your company contract manager.
 
-from pkg.model import SimpleItemInfo
-from pkg.utils import random_string
+from .model import SimpleItemInfo
+from .utils import random_string
 
 from typing import Tuple, List
 
