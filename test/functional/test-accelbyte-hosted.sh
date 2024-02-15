@@ -6,7 +6,7 @@ set -e
 set -o pipefail
 #set -x
 
-APP_NAME=int-test-revocation
+APP_NAME=int-rv
 
 get_code_verifier() 
 {
