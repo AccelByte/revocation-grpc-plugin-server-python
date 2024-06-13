@@ -17,6 +17,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
         config=config, 
         currency_code="VCA"
     )
+    success = True
     try:
         # 1.
         print("Configuring platform service grpc target... ")
@@ -85,6 +86,11 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
         print("\nRevocation Result: ")
         print(f"Revocation history id: {revocation_result.id_}")
         print(f"Revocation status id: {revocation_result.status}")
+        
+        if revocation_result.status != "SUCCESS":
+           success = False
+           raise Exception() 
+
         for r in revocation_result.item_revocations:
             print(r)
 
@@ -117,6 +123,8 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
             print("[OK]")
         print("[CLEAN UP FINISHED]")
 
+    return success
+
 def main():
     config = get_config()
 
@@ -136,7 +144,10 @@ def main():
     print("[OK]")
     
     print("# Test Start")
-    start_testing(user_info, config)
+    success = start_testing(user_info, config)
+    
+    if not success:
+        exit(1)
             
 if __name__ == "__main__":
     main()
