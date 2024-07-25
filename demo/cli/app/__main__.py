@@ -2,22 +2,24 @@
 # This is licensed software from AccelByte Inc, for limitations
 # and restrictions contact your company contract manager.
 
+import random
+import string
 import traceback
 
 import accelbyte_py_sdk as accelbyte_py_sdk
+import accelbyte_py_sdk.core as sdk_core
 import accelbyte_py_sdk.services.auth as auth_service
 import accelbyte_py_sdk.api.iam as iam_service
+import accelbyte_py_sdk.api.iam.models as iam_models
 
 from .pkg.config import get_config
 from .pkg.demo import PlatformDataUnit
 
+
 def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"):
-    pdu = PlatformDataUnit(
-        user_info=user_info, 
-        config=config, 
-        currency_code="VCA"
-    )
+    pdu = PlatformDataUnit(user_info=user_info, config=config, currency_code="VCA")
     success = True
+    # noinspection PyBroadException
     try:
         # 1.
         print("Configuring platform service grpc target... ")
@@ -26,7 +28,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
             print("[ERR]")
             raise Exception(error)
         print("[OK]")
-        
+
         # 2.
         print("Creating store... ")
         error = pdu.create_store(True)
@@ -61,7 +63,9 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 6.
         print("Creating items...")
-        items, error = pdu.create_items(item_count=1, category_path=category_path, do_publish=True)
+        items, error = pdu.create_items(
+            item_count=1, category_path=category_path, do_publish=True
+        )
         if error:
             print("[ERR]")
             raise Exception(error)
@@ -69,7 +73,9 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 7.
         print("Creating order...")
-        order_info, error = pdu.create_order(user_id=user_info.user_id, item_info=items[0])
+        order_info, error = pdu.create_order(
+            user_id=user_info.user_id, item_info=items[0]
+        )
         if error:
             print("[ERR]")
             raise Exception(error)
@@ -77,27 +83,32 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
         # 8.
         print("Revoking order...")
-        revocation_result, error = pdu.revoke(user_id=user_info.user_id, order_no=order_info.order_no, item_id=order_info.item_id)
+        revocation_result, error = pdu.revoke(
+            user_id=user_info.user_id,
+            order_no=order_info.order_no,
+            item_id=order_info.item_id,
+        )
         if error:
             print("[ERR]")
             raise Exception(error)
         print("[OK]")
-        
+
         print("\nRevocation Result: ")
         print(f"Revocation history id: {revocation_result.id_}")
         print(f"Revocation status id: {revocation_result.status}")
-        
+
         if revocation_result.status != "SUCCESS":
-           success = False
-           raise Exception() 
+            success = False
+            raise Exception()
 
         for r in revocation_result.item_revocations:
             print(r)
 
         print("[SUCCESS]")
-    except:
+    except Exception:
         print(traceback.format_exc())
         print("\n[FAILED]")
+        success = False
     finally:
         print("# Cleaning Up")
         print("Deleting currency... ")
@@ -113,7 +124,7 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
                 print(error)
                 return
             print("[OK]")
-        
+
         if config.GRPCServerURL:
             print("Unset platform service grpc target... ")
             error = pdu.unset_platform_service_grpc_target()
@@ -125,6 +136,53 @@ def start_testing(user_info, config, category_path="/pythonRevocationPluginDemo"
 
     return success
 
+
+def generate_password(length: int) -> str:
+    strings = [
+        string.ascii_lowercase,
+        string.ascii_uppercase,
+        string.digits,
+        "!@#$%^&*()_+-=",
+    ]
+
+    si = 0
+    result = ""
+    for _ in range(length):
+        result += random.choice(strings[si])
+        si += 1
+        if si == len(strings):
+            si = 0
+
+    return result
+
+
+def create_test_user():
+    name_id = sdk_core.generate_id(8)
+
+    username = f"extend_{name_id}_user"
+    password = generate_password(16)
+    display_name = f"Extend Test User {name_id}"
+
+    user_info, error = iam_service.public_create_test_user_v4(
+        body=iam_models.AccountCreateTestUserRequestV4.create(
+            auth_type="EMAILPASSWD",
+            country="ID",
+            date_of_birth="1990-01-01",
+            display_name=display_name,
+            email_address=f"{username}@dummy.net",
+            password=password,
+            password_md5_sum=password,
+            username=username,
+            verified=True,
+            unique_display_name=display_name,
+        )
+    )
+    if error:
+        raise Exception(error)
+
+    return user_info
+
+
 def main():
     config = get_config()
 
@@ -132,22 +190,21 @@ def main():
 
     print("# Arrange")
     print("## Login to AccelByte... ")
-    _, error = auth_service.login_user(username=config.ABUsername, password=config.ABPassword)
+    _, error = auth_service.login_client()
     if error:
         raise Exception(error)
     print("[OK]")
 
     print("## Get user info")
-    user_info, error = iam_service.public_get_my_user_v3() 
-    if error:
-        raise Exception(error)
+    user_info = create_test_user()
     print("[OK]")
-    
+
     print("# Test Start")
     success = start_testing(user_info, config)
-    
+
     if not success:
         exit(1)
-            
+
+
 if __name__ == "__main__":
     main()
