@@ -10,12 +10,12 @@ from google.protobuf.json_format import MessageToDict
 
 from accelbyte_py_sdk import AccelByteSDK
 
-from ..proto.revocation_pb2 import (
+from revocation_pb2 import (
     RevokeRequest,
     RevokeResponse,
     DESCRIPTOR,
 )
-from ..proto.revocation_pb2_grpc import RevocationServicer
+from revocation_pb2_grpc import RevocationServicer
 
 from ..object.revoke_entry_type import RevokeEntryType
 from ..object.revocation_status import RevocationStatus

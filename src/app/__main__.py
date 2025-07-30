@@ -26,7 +26,7 @@ from accelbyte_grpc_plugin import (
 )
 from accelbyte_grpc_plugin.utils import instrument_sdk_http_client
 
-from .proto.revocation_pb2_grpc import add_RevocationServicer_to_server
+from revocation_pb2_grpc import add_RevocationServicer_to_server
 from .services.revocation_service import AsyncRevocationService
 from .utils import create_env
 

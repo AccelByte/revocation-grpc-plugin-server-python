@@ -1,6 +1,6 @@
 from abc import abstractclassmethod, ABC
 
-from app.proto.revocation_pb2 import RevokeResponse
+from revocation_pb2 import RevokeResponse
 from app.object.revocation_status import RevocationStatus
 
 class Revocation(ABC):
